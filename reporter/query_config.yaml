@@ -1,0 +1,9 @@
+Object Counts: object_counts.sql
+Mismatched Object Counts: object_counts_mismatch.sql
+Object Counts (per Schema): object_counts_per_schema.sql
+Mismatched Object Counts (per Schema): object_counts_per_schema_mismatch.sql
+Missing Objects: missing_objects.sql
+Mismatched Line Counts (PL/SQL): line_count_mismatch.sql
+Mismatched Line Counts per Object (PL/SQL): line_count_mismatch_detailed.sql
+# Invalid Objects: invalid_objects.sql
+# Source Code Differences: source_code_diff.sql
