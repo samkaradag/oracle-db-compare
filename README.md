@@ -26,15 +26,13 @@ This utility streamlines the process of comparing the schemas and code objects o
 
 2. **Set Up Environment:**
 Install required Python packages:
-Bash
 pip install -r requirements.txt
 
 Set environment variables (refer to config.py.example):
-ORACLE_CONN_STRING_1: Connection string for the first Oracle database.
-ORACLE_CONN_STRING_2: Connection string for the second Oracle database.
-GOOGLE_APPLICATION_CREDENTIALS: Path to your Google Cloud service account credentials JSON file.
-PROJECT_ID: Your Google Cloud project ID.
-DATASET_ID: The BigQuery dataset to use (created if it doesn't exist).
+* ORACLE_CONN_STRING: Connection string for the Oracle database(s).
+* GOOGLE_APPLICATION_CREDENTIALS: Use gcloud auth application-default login
+* PROJECT_ID: Your Google Cloud project ID.
+* DATASET_ID: The BigQuery dataset to use (created if it doesn't exist).
 
 ## Usage
 * **Collect Metadata:**
