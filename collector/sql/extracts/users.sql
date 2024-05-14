@@ -25,6 +25,8 @@ SELECT
 FROM
     &v_tblprefix._users a 
 WHERE
-    a.USERNAME NOT IN @&EXTRACTSDIR/exclude_schemas.sql;
+    a.USERNAME NOT IN 
+@&EXTRACTSDIR/exclude_schemas.sql
+;
 
 spool off

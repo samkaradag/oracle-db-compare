@@ -17,15 +17,11 @@ limitations under the License.
 set termout on pause on
 SET DEFINE "&"
 DEFINE SQLDIR=&2
-DEFINE v_dodiagnostics=&3
-DEFINE v_tag=&4
-DEFINE outputdir=&5
-DEFINE v_manualUniqueId=&6
-DEFINE v_statsWindow=&7
+DEFINE v_tag=&3
+DEFINE outputdir=&4
+DEFINE v_manualUniqueId=&5
 
 DEFINE EXTRACTSDIR=&SQLDIR/extracts
-DEFINE AWRDIR=&EXTRACTSDIR/awr
-DEFINE STATSPACKDIR=&EXTRACTSDIR/statspack
 DEFINE TERMOUTOFF=OFF
 prompt
 prompt ***********************************************************************************
@@ -44,8 +40,6 @@ set termout &TERMOUTOFF
 set termout on
 prompt
 prompt Initialization completed.
-
-
 prompt
 prompt Collecting Database Schema Validation data...
 prompt

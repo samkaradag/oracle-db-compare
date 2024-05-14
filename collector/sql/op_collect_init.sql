@@ -20,7 +20,6 @@ Please ensure you have proper licensing. For more information consult Oracle Sup
 prompt Param1 = &1
 
 define version = '&1'
-define dtrange = &v_statsWindow
 define colspr = '|'
 
 -- Set the environment to a known state, overriding any custom configuration.
@@ -37,7 +36,7 @@ set scan on
 set pause off
 set wrap on
 set echo off
-set appinfo 'DB MIGRATION ASSESSMENT'
+set appinfo 'DB SCHEMA Compare'
 set colsep '|'
 set timing off
 set time off
@@ -284,22 +283,6 @@ SELECT :b_compress_col AS p_compress_col FROM dual;
 -- Determine if we can check for table compression.  END
 
 
--- Determine if we can collect IO stats based on requested performance stats source.   BEGIN
-DECLARE
-cnt NUMBER;
-BEGIN
-  SELECT SUM(cnt) INTO cnt FROM (
-    SELECT count(1) FROM dba_views WHERE (view_name = 'DBA_HIST_IOSTAT_FUNCTION' AND '&v_dodiagnostics' = 'usediagnostics')
-    UNION
-    SELECT count(1) FROM dba_tables WHERE (table_name ='STATS$IOSTAT_FUNCTION_NAME' AND '&v_dodiagnostics' = 'nodiagnostics' AND OWNER ='PERFSTAT')
-  );
-  IF (cnt > 0 ) THEN :b_io_function_sql := 'iofunction.sql';
-  ELSE
-    :b_io_function_sql := 'noop.sql';
-  END IF;
-END;
-/
-
 SELECT :b_io_function_sql AS p_io_function_sql FROM dual;
 -- Determine if we can collect IO stats based on requested performance stats source.   END
 
@@ -387,115 +370,18 @@ SELECT :b_index_visibility AS p_index_visibility FROM DUAL;
 
 -- Determine if this version of the database supports invisible indexes -- END
 
-
--- This is where we determine which source (AWR, STATSPACK or NONE) we will use for performance metrics -- BEGiN
--- and which snaps we will collect.
 variable sp VARCHAR2(100);
 variable v_info_prompt VARCHAR2(200);
 column sp_script new_value p_sp_script noprint
 column info_prompt new_value p_info_prompt noprint
 
-set termout on
 set serveroutput on
-DECLARE
-  cnt NUMBER;
-  l_tab_name VARCHAR2(100) := '---';
-  l_col_name VARCHAR2(100);
-  the_sql VARCHAR2(1000) := '---';
-  table_does_not_exist EXCEPTION;
-  PRAGMA EXCEPTION_INIT (table_does_not_exist, -00942);
-BEGIN
-  -- Set default performance metrics to NONE.
-  :sp  := 'prompt_nostatspack.sql';
-
-  -- Use AWR repository if requested.
-  IF '&v_dodiagnostics' = 'usediagnostics' THEN
-     l_tab_name := 'DBA_HIST_SNAPSHOT';
-     l_col_name := 'begin_interval_time';
-
-  -- If STATSPACK has been requested, check that it is installed and permissions granted.
-  ELSE IF '&v_dodiagnostics' = 'nodiagnostics' THEN
-         SELECT count(1) INTO cnt FROM all_tables WHERE owner ='PERFSTAT' AND table_name IN ('STATS$OSSTAT', 'STATS$OSSTATNAME', 'STATS$SNAPSHOT', 'STATS$SQL_SUMMARY', 'STATS$SYSSTAT', 'STATS$SYSTEM_EVENT', 'STATS$SYS_TIME_MODEL', 'STATS$TIME_MODEL_STATNAME');
-
-         -- If we have access to STATSPACK, use STATSPACK as the source of performance metrics
- 	 IF cnt = 8 THEN
-           :sp := 'op_collect_statspack.sql';
-           l_tab_name := 'STATS$SNAPSHOT';
-           l_col_name := 'snap_time';
-         END IF;
-       -- If instructed to not collect performance metrics, do not collect stats.
-       ELSE IF  '&v_dodiagnostics' = 'nostatspack' THEN
-              :sp  := 'prompt_nostatspack.sql';
-            -- If we get here, then there was a problem.
-            ELSE l_tab_name :=  'ERROR - Unexpected parameter: &v_dodiagnostics';
-            END IF;
-       END IF;
-  END IF;
-
-  BEGIN
-    IF l_tab_name = '---' THEN
-        dbms_output.put_line('No performance data will be collected.');
-    ELSE
-      -- Verify there are metrics to collect.
-      BEGIN
-        EXECUTE IMMEDIATE 'SELECT count(1) FROM ' || upper(l_tab_name) || ' WHERE rownum < 2' INTO cnt ;
-        IF cnt = 0 THEN
-            dbms_output.put_line('No data found in ' ||  upper(l_tab_name) || '.  No performance data will be collected.');
-        END IF;
-        EXCEPTION WHEN table_does_not_exist THEN
-          RAISE_APPLICATION_ERROR(-20002, 'This user does not have SELECT privileges on ' || upper(l_tab_name) || '.  Please ensure the grants_wrapper.sql script has been executed for this user.');
-      END;
-    END IF;
-  END;
-  IF (l_tab_name != '---' AND l_tab_name NOT LIKE 'ERROR%') THEN
-     -- Get the snapshot range for AWR stats.
-     IF l_tab_name = 'DBA_HIST_SNAPSHOT' THEN
-       THE_SQL := 'SELECT min(snap_id) , max(snap_id) FROM ' || l_tab_name || ' WHERE ' || l_col_name || ' >= (sysdate- &&dtrange ) AND dbid = :1 ';
-       EXECUTE IMMEDIATE the_sql INTO  :minsnap, :maxsnap USING '&&v_dbid' ;
-       IF :minsnap IS NULL THEN
-          dbms_output.put_line('Warning: No snapshots found within the last &&dtrange days.  No performance data will be extracted.');
-          :minsnap := -1;
-          :maxsnap := -1;
-          :v_info_prompt := 'without performance data';
-       ELSE
-          :v_info_prompt := 'between snaps ' || :minsnap || ' and ' || :maxsnap;
-       END IF;
-     ELSE
-       -- Get the snapshot range for STATSPACE stats.
-       THE_SQL := 'SELECT min(snap_time) , max(snap_time) FROM ' || l_tab_name || ' WHERE ' || l_col_name || ' >= (sysdate- &&dtrange ) AND dbid = :1 ';
-       EXECUTE IMMEDIATE the_sql INTO  :minsnaptime, :maxsnaptime USING '&&v_dbid' ;
-       IF :minsnaptime IS NULL THEN
-          dbms_output.put_line('Warning: No snapshots found within the last &&dtrange days.  No performance data will be extracted.');
-          :minsnaptime := sysdate;
-          :maxsnaptime := sysdate;
-          :v_info_prompt := 'without performance data';
-       ELSE
-          :v_info_prompt := 'between  ' || :minsnaptime || ' and ' || :maxsnaptime;
-       END IF;
-     END IF;
-  ELSE
-     :v_info_prompt := 'without performance data';
-  END IF;
-END;
-/
-set termout off
-SELECT NVL(:minsnap, -1) min_snapid, NVL(:maxsnap, -1) max_snapid, NVL(:minsnaptime, SYSDATE) min_snaptime, NVL(:maxsnaptime, SYSDATE) max_snaptime,  :sp sp_script, :v_info_prompt info_prompt FROM dual;
-
 set termout on
 -- PROMPT Collecting data for database &v_dbname '&&v_dbid' &p_info_prompt
 PROMPT Collecting data for database &v_dbname 
 PROMPT
 
 set termout &TERMOUTOFF
-
-COLUMN min_snapid clear
-COLUMN max_snapid clear
-COLUMN min_snaptime clear
-COLUMN max_snaptime clear
-
--- This is where we determine which source (AWR, STATSPACK or NONE) we will use for performance metrics -- END
-
-
 
 -- This is where we set the substitution variables for working within container databases. -- BEGIN
 column a_con_id new_value v_a_con_id noprint

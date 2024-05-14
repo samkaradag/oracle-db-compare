@@ -16,7 +16,6 @@ limitations under the License.
 
 spool &outputdir/opdb__tabprivs__&v_tag
 prompt PKEY|CON_ID|OWNER|GRANTEE|TABLE_NAME|PRIVILEGE
-
 SELECT
     :v_pkey AS pkey,
     &v_a_con_id AS con_id,
@@ -30,6 +29,4 @@ WHERE
     a.owner NOT IN
 @&EXTRACTSDIR/exclude_schemas.sql
 ;
-
-
 spool off

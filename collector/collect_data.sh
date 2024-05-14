@@ -109,9 +109,7 @@ EOF
 function executeOP {
 connectString="$1"
 OpVersion=$2
-DiagPack=$(echo $3 | tr [[:upper:]] [[:lower:]])
-manualUniqueId="${4}"
-statsWindow=${5}
+manualUniqueId="${3}"
 
 if ! [ -x "$(command -v ${SQLPLUS})" ]; then
   echo "Could not find ${SQLPLUS} command. Source in environment and try again"
@@ -122,7 +120,7 @@ fi
 
 ${SQLPLUS} -s /nolog << EOF
 connect ${connectString}
-@${SQL_DIR}/op_collect.sql ${OpVersion} ${SQL_DIR} ${DiagPack} ${V_TAG} ${SQLOUTPUT_DIR} "${manualUniqueId}" ${statsWindow}
+@${SQL_DIR}/op_collect.sql ${OpVersion} ${SQL_DIR} ${V_TAG} ${SQLOUTPUT_DIR} "${manualUniqueId}" 
 exit;
 EOF
 
@@ -293,22 +291,13 @@ echo "        --databaseService     Database service name"
 echo "        --collectionUserName  Database user name"
 echo "        --collectionUserPass  Database password"
 echo "      }"
-echo "  Performance statistics source"
-echo "      --statsSrc              Required. Must be one of AWR, STATSPACK, NONE.   When using STATSPACK, see note about --statsWindow parameter below."
-echo ""
-echo "  Performance statistics window"
-echo "      --statsWindow           Optional. Number of days of performance stats to collect.  Must be one of 7, 30.  Default is 30."
-echo "                              NOTE: IF STATSPACK HAS LESS THAN 30 DAYS OF COLLECTION DATA, SET THIS PARAMETER TO 7 TO LIMIT TO 1 WEEK OF COLLECTION."
-echo "                              IF STATSPACK HAS BEEN ACTIVATED SPECIFICALLY FOR DMA COLLECTION, ENSURE THERE ARE AT LEAST 8"
-echo "                              CALENDAR DAYS OF COLLECTION BEFORE RUNNING THE DMA COLLECTOR."
-echo
 echo
 echo " Example:"
 echo
 echo
-echo "  ./collect-data.sh --connectionStr {user}/{password}@//{db host}:{listener port}/{service name} --statsSrc AWR"
+echo "  ./collect-data.sh --connectionStr {user}/{password}@//{db host}:{listener port}/{service name}"
 echo " or"
-echo "  ./collect-data.sh --collectionUserName {user} --collectionUserPass {password} --hostName {db host} --port {listener port} --databaseService {service name} --statsSrc AWR"
+echo "  ./collect-data.sh --collectionUserName {user} --collectionUserPass {password} --hostName {db host} --port {listener port} --databaseService {service name}"
 
 }
 ### Validate input
@@ -322,7 +311,6 @@ dbType=""
 statsSrc=""
 connStr=""
 manualUniqueId=""
-statsWindow=30
 
  if [[ $(($# & 1)) == 1 ]] ;
  then
@@ -338,10 +326,8 @@ statsWindow=30
 	 elif [[ "$1" == "--collectionUserName" ]]; then collectionUserName="${2}"
 	 elif [[ "$1" == "--collectionUserPass" ]]; then collectionUserPass="${2}"
 	 elif [[ "$1" == "--dbType" ]];             then dbType=$(echo "${2}" | tr '[:upper:]' '[:lower:]')
-	 elif [[ "$1" == "--statsSrc" ]];           then statsSrc=$(echo "${2}" | tr '[:upper:]' '[:lower:]')
 	 elif [[ "$1" == "--connectionStr" ]];      then connStr="${2}"
 	 elif [[ "$1" == "--manualUniqueId" ]];     then manualUniqueId="${2}"
-	 elif [[ "$1" == "--statsWindow" ]];        then statsWindow="${2}"
 	 else
 		 echo "Unknown parameter ${1}"
 		 printUsage
@@ -364,9 +350,6 @@ statsWindow=30
          DIAGPACKACCESS="nostatspack"
  fi
 
- if [[ ${statsWindow} -ne 30 ]] && [[ ${statsWindow} -ne 7 ]] ; then
-	 statsWindow=30
- fi
 
  if [[ "${connStr}" == "" ]] ; then
 	 if [[ "${hostName}" != "" && "${port}" != "" && "${databaseService}" != "" && "${collectionUserName}" != "" && "${collectionUserPass}" != "" ]] ; then
@@ -443,7 +426,7 @@ if [ $retval -eq 0 ]; then
       fi
     fi
     V_TAG="$(echo ${sqlcmd_result} | cut -d '|' -f2).csv"; export V_TAG
-    executeOP "${connectString}" ${OpVersion} ${DIAGPACKACCESS} "${manualUniqueId}" $statsWindow
+    executeOP "${connectString}" ${OpVersion} "${manualUniqueId}" 
     retval=$?
     if [ $retval -ne 0 ]; then
       createErrorLog  $(echo ${V_TAG} | sed 's/.csv//g')
