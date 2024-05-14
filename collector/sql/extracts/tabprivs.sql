@@ -28,7 +28,8 @@ FROM
     &v_tblprefix._tab_privs a 
 WHERE
     a.owner NOT IN
-@&EXTRACTSDIR/exclude_schemas.sql;
+@&EXTRACTSDIR/exclude_schemas.sql
+;
 
 
 spool off
