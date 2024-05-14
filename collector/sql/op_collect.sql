@@ -82,6 +82,14 @@ set termout &TERMOUTOFF
 -- @&EXTRACTSDIR/tabletypes.sql
 -- @&EXTRACTSDIR/tabletypedtl.sql
 @&EXTRACTSDIR/triggers.sql
+@&EXTRACTSDIR/indexes.sql
+@&EXTRACTSDIR/instances.sql
+@&EXTRACTSDIR/roleprivs.sql
+@&EXTRACTSDIR/roles.sql
+@&EXTRACTSDIR/sysprivs.sql
+@&EXTRACTSDIR/tabcolumns.sql
+@&EXTRACTSDIR/tabprivs.sql
+@&EXTRACTSDIR/users.sql
 -- @&EXTRACTSDIR/usedspacedetails.sql
 -- @&EXTRACTSDIR/usrsegatt.sql
 -- @&SQLDIR/&v_dopluggable
