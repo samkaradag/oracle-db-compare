@@ -17,7 +17,6 @@ limitations under the License.
 spool &outputdir/opdb__columns__&v_tag
 prompt PKEY|CON_ID|OWNER|TABLE_NAME|COLUMN_NAME|DATA_TYPE|DATA_TYPE_OWNER|DATA_LENGTH|DATA_PRECISION|DATA_SCALE|NULLABLE|DMA_SOURCE_ID|DMA_MANUAL_ID
 
-
 SELECT /*+ USE_HASH(b a) NOPARALLEL */
     :v_pkey AS pkey,
     &v_a_con_id AS con_id,
@@ -32,10 +31,9 @@ SELECT /*+ USE_HASH(b a) NOPARALLEL */
     nullable,
     :v_dma_source_id AS DMA_SOURCE_ID, :v_manual_unique_id AS DMA_MANUAL_ID
 FROM
-    &v_tblprefix._tab_columns a INNER JOIN &v_tblprefix._objects b ON &v_a_con_id = &v_b_con_id AND a.owner = b.owner AND a.table_name = b.object_name and b.object_type = 'TABLE'
+    &v_tblprefix._tab_columns a
 WHERE
     a.owner NOT IN
-@&EXTRACTSDIR/exclude_schemas.sql;
-
-
+@&EXTRACTSDIR/exclude_schemas.sql
+;
 spool off
