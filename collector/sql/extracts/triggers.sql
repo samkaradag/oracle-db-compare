@@ -44,6 +44,7 @@ WHERE
                                          ( 'SYS', 'AW_REN_TRG' ) ,
                                          ( 'SYS', 'AW_DROP_TRG' )
                                          )
+)
 SELECT :v_pkey AS pkey,
        con_id,
        owner,
