@@ -22,7 +22,7 @@ spool off
 spool &outputdir/opdb__instances__&v_tag
 prompt PKEY
 
-SELECT :v_pkey AS pkey 
+SELECT :v_pkey AS pkey, 1 as count 
 FROM dual;
 
 spool off

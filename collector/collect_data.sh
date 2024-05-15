@@ -341,16 +341,6 @@ manualUniqueId=""
 	 dbType="oracle"
  fi
 
- if [[ "${statsSrc}" = "awr" ]]; then
-          DIAGPACKACCESS="UseDiagnostics"
- elif [[ "${statsSrc}" = "statspack" ]] ; then
-          DIAGPACKACCESS="NoDiagnostics"
- else
-	 echo No performance data will be collected.
-         DIAGPACKACCESS="nostatspack"
- fi
-
-
  if [[ "${connStr}" == "" ]] ; then
 	 if [[ "${hostName}" != "" && "${port}" != "" && "${databaseService}" != "" && "${collectionUserName}" != "" && "${collectionUserPass}" != "" ]] ; then
 		 connStr="${collectionUserName}/${collectionUserPass}@//${hostName}:${port}/${databaseService}"

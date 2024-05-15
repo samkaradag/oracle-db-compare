@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 spool &outputdir/opdb__indexes__&v_tag
-prompt PKEY|CON_ID|OWNER|INDEX_NAME|INDEX_TYPE|TABLE_OWNER|TABLE_NAME|UNIQUENESS|STATUS|DMA_SOURCE_ID|DMA_MANUAL_ID
+prompt PKEY|CON_ID|OWNER|INDEX_NAME|INDEX_TYPE|TABLE_OWNER|TABLE_NAME|UNIQUENESS|STATUS|NUM_ROWS|DMA_SOURCE_ID|DMA_MANUAL_ID
 
 
 SELECT /*+ USE_HASH(b a) NOPARALLEL */
@@ -28,9 +28,10 @@ SELECT /*+ USE_HASH(b a) NOPARALLEL */
     table_name,
     uniqueness,
     status,
+    num_rows,
     :v_dma_source_id AS DMA_SOURCE_ID, :v_manual_unique_id AS DMA_MANUAL_ID
 FROM
-    &v_tblprefix._indexes a INNER JOIN &v_tblprefix._objects b ON &v_a_con_id = &v_b_con_id AND a.owner = b.owner AND a.index_name = b.object_name and b.object_type = 'INDEX'
+    &v_tblprefix._indexes a
 WHERE
     a.owner NOT IN
 @&EXTRACTSDIR/exclude_schemas.sql;

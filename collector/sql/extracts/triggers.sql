@@ -14,15 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 spool &outputdir/opdb__triggers__&v_tag
-prompt PKEY|CON_ID|OWNER|TRIGGER_TYPE|TRIGGERING_EVENT|BASE_OBJECT_TYPE|TRIGGER_COUNT|DMA_SOURCE_ID|DMA_MANUAL_ID
+prompt PKEY|CON_ID|OWNER|trigger_name|TRIGGER_TYPE|TRIGGERING_EVENT|BASE_OBJECT_TYPE|DMA_SOURCE_ID|DMA_MANUAL_ID
 WITH trginfo AS (
 SELECT
     &v_a_con_id AS con_id,
     owner,
+    trigger_name,
     trigger_type,
     triggering_event,
-    base_object_type,
-    COUNT(1) AS trigger_count
+    base_object_type
 FROM
     &v_tblprefix._triggers a
 WHERE
@@ -44,19 +44,13 @@ WHERE
                                          ( 'SYS', 'AW_REN_TRG' ) ,
                                          ( 'SYS', 'AW_DROP_TRG' )
                                          )
-GROUP BY
-    &v_a_con_id,
-    owner,
-    trigger_type,
-    triggering_event,
-    base_object_type)
 SELECT :v_pkey AS pkey,
        con_id,
        owner,
+       trigger_name,
        trigger_type,
        triggering_event,
        base_object_type,
-       trigger_count,
        :v_dma_source_id AS DMA_SOURCE_ID, :v_manual_unique_id AS DMA_MANUAL_ID
 FROM  trginfo;
 spool off

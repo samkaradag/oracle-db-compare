@@ -77,7 +77,7 @@ def generate_report(config, results, instance_1_name, instance_2_name):
     return report
 
 # Get instance names
-instances = client.query("SELECT DISTINCT PKEY FROM " + dataset_name + "." + table_name).result()
+instances = client.query("SELECT DISTINCT string_field_0 PKEY FROM " + dataset_name + "." + table_name).result()
 # Convert instances to a list
 instance_names = [row[0] for row in instances]
 
