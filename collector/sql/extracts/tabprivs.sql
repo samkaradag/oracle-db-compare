@@ -28,5 +28,7 @@ FROM
 WHERE
     a.owner NOT IN
 @&EXTRACTSDIR/exclude_schemas.sql
+    AND a.grantee NOT IN
+@&EXTRACTSDIR/exclude_schemas.sql
 ;
 spool off

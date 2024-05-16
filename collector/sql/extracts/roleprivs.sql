@@ -23,7 +23,13 @@ SELECT
     grantee,
     granted_role
 FROM
-    &v_tblprefix._role_privs a;
+    &v_tblprefix._role_privs a
+WHERE grantee NOT IN
+@&EXTRACTSDIR/exclude_schemas.sql
+and a.grantee NOT IN 
+@&EXTRACTSDIR/exclude_roles.sql
+;
+
 
 
 spool off

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-spool &outputdir/opdb__tabprivs__&v_tag
+spool &outputdir/opdb__roles__&v_tag
 prompt PKEY|CON_ID|ROLE
 
 SELECT
@@ -24,6 +24,8 @@ SELECT
 FROM
     &v_tblprefix._roles a 
 WHERE
-    a.ORACLE_MAINTAINED = 'N';
+    a.role NOT IN 
+@&EXTRACTSDIR/exclude_roles.sql
+;
 
 spool off

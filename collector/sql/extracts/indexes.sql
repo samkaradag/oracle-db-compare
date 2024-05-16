@@ -34,7 +34,8 @@ FROM
     &v_tblprefix._indexes a
 WHERE
     a.owner NOT IN
-@&EXTRACTSDIR/exclude_schemas.sql;
+@&EXTRACTSDIR/exclude_schemas.sql
+;
 
 
 spool off

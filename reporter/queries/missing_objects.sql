@@ -21,7 +21,7 @@ SELECT
   IF(i1.OBJECT_NAME IS NULL, 'Missing', 'Present') AS instance_1_status,
   IF(i2.OBJECT_NAME IS NULL, 'Missing', 'Present') AS instance_2_status
 FROM all_objects a
-LEFT JOIN instance_objects i1 ON a.OBJECT_NAME = i1.OBJECT_NAME AND a.OBJECT_TYPE = i1.OBJECT_TYPE AND i1.instance_id = 'instance-1_NOK19ORC_051424102724'
-LEFT JOIN instance_objects i2 ON a.OBJECT_NAME = i2.OBJECT_NAME AND a.OBJECT_TYPE = i2.OBJECT_TYPE AND i2.instance_id = 'instance-1_NOK19ORC_051424135221'
+LEFT JOIN instance_objects i1 ON a.OBJECT_NAME = i1.OBJECT_NAME AND a.OBJECT_TYPE = i1.OBJECT_TYPE AND i1.instance_id = '<instance_1_id>'
+LEFT JOIN instance_objects i2 ON a.OBJECT_NAME = i2.OBJECT_NAME AND a.OBJECT_TYPE = i2.OBJECT_TYPE AND i2.instance_id = '<instance_2_id>'
 WHERE i1.OBJECT_NAME IS NULL OR i2.OBJECT_NAME IS NULL
 ORDER BY a.OBJECT_TYPE, a.OBJECT_NAME;

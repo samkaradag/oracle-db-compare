@@ -40,12 +40,20 @@ table_name = args.table_name or os.environ.get("TABLE_NAME") or DEFAULT_TABLE_NA
 
 client = bigquery.Client(project=project_id)
 
+def replace_instance_id(query_file):
+    # Replace instance id placeholders in the queries
+    with open(f"{QUERIES_FOLDER}/{query_file}", "r") as f:
+        query = f.read()
+        query = query.replace('<instance_1_id>', instance_1_name)
+        query = query.replace('<instance_2_id>', instance_2_name)
+        return query
+
 # Function to load and execute queries from files
 def execute_queries(config):
     results = []
     for section, query_file in config.items():
         with open(f"{QUERIES_FOLDER}/{query_file}", "r") as f:
-            query = f.read()
+            query = replace_instance_id(query_file)
             results.append(execute_query(query))
     return results
 
@@ -77,7 +85,7 @@ def generate_report(config, results, instance_1_name, instance_2_name):
     return report
 
 # Get instance names
-instances = client.query("SELECT DISTINCT string_field_0 PKEY FROM " + dataset_name + "." + table_name).result()
+instances = client.query("SELECT DISTINCT string_field_0 as PKEY FROM " + dataset_name + "." + table_name).result()
 # Convert instances to a list
 instance_names = [row[0] for row in instances]
 
@@ -89,17 +97,6 @@ if len(instance_names) >= 2:
     print("Instance 2:", instance_2_name)
 else:
     print("Not enough instances found in the table.")
-
-# Replace instance id placeholders in the queries
-with open(CONFIG_FILE, "r") as f:
-    config = yaml.safe_load(f)
-    for query_file in config.values():
-        with open(f"{QUERIES_FOLDER}/{query_file}", "r") as f:
-            query = f.read()
-            query = query.replace('<instance_1_id>', instance_1_name)
-            query = query.replace('<instance_2_id>', instance_2_name)
-            with open(f"{QUERIES_FOLDER}/{query_file}", "w") as f:
-                f.write(query)
 
 # Load configuration and execute queries
 with open(CONFIG_FILE, "r") as f:

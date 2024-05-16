@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-spool &outputdir/opdb__tabprivs__&v_tag
+spool &outputdir/opdb__users__&v_tag
 prompt PKEY|CON_ID|USERNAME|ACCOUNT_STATUS
 
 SELECT
