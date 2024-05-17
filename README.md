@@ -34,6 +34,15 @@ Set environment variables (refer to config.py.example):
 * PROJECT_ID: Your Google Cloud project ID.
 * DATASET_ID: The BigQuery dataset to use (created if it doesn't exist).
 
+## Client requirements:
+
+* Oracle client installed
+* tns_names.ora file that includes the target db tns.
+* python3
+* Python dependencies installed (pip install -r requirements.txt)
+* Google Cloud CLI (https://cloud.google.com/sdk/docs/install-sdk)
+* Network connectivity to Oracle instances and BigQuery APIs.
+
 ## Usage
 * **Collect Metadata:**
 
