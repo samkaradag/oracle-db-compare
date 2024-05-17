@@ -1,5 +1,5 @@
 WITH instances AS (
-  SELECT DISTINCT string_field_0 AS instance_id
+  SELECT DISTINCT PKEY AS instance_id
   FROM schema_compare.instances
 ),
 all_columns AS (

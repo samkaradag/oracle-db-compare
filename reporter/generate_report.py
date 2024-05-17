@@ -52,6 +52,7 @@ def replace_instance_id(query_file):
 def execute_queries(config):
     results = []
     for section, query_file in config.items():
+        print("Checking: ",section)
         with open(f"{QUERIES_FOLDER}/{query_file}", "r") as f:
             query = replace_instance_id(query_file)
             results.append(execute_query(query))
@@ -85,7 +86,7 @@ def generate_report(config, results, instance_1_name, instance_2_name):
     return report
 
 # Get instance names
-instances = client.query("SELECT DISTINCT string_field_0 as PKEY FROM " + dataset_name + "." + table_name).result()
+instances = client.query("SELECT DISTINCT PKEY FROM " + dataset_name + "." + table_name).result()
 # Convert instances to a list
 instance_names = [row[0] for row in instances]
 
