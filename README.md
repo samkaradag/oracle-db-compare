@@ -45,7 +45,7 @@ python importer.py --project_id your_project_id --dataset_id your_dataset_name
 
 * **Generate Reports:**
 
-python generate_report.py --project_id your_project_id --dataset_name your_dataset_name --table_name dbobjects
+python generate_report.py --project_id your_project_id --dataset_name your_dataset_name --table_name instances
 
 ## Report Output
 The generated reports will be saved in the reports directory.
@@ -60,13 +60,4 @@ Contributions are welcome! Please feel free to open issues or submit pull reques
 ## License
 This project is licensed under the Apache License.
 
-
-**Key improvements:**
-
-* **Clearer Structure:**  README sections follow standard conventions for improved readability.
-* **Detailed Prerequisites:** Helps users get started quickly.
-* **Customization Guidance:** Points users to the right places to make changes.
-* **Contributing and License:** Standard sections for open-source projects.
-
-Let me know if you'd like any further adjustments or have more details to add! 
 
