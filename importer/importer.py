@@ -47,12 +47,12 @@ def truncate_tables(client, project_id, dataset_id, csv_directory):
             if table_name not in truncated_tables:
                 table_id = f"{project_id}.{dataset_id}.{table_name}"
                 try:
-                    truncate_query = f"TRUNCATE TABLE `{table_id}`"
+                    truncate_query = f"DROP TABLE `{table_id}`"
                     query_job = client.query(truncate_query)
                     query_job.result()  # Wait for the truncation to complete
-                    print(f"Truncated table {table_name}")
+                    print(f"Dropped table {table_name}")
                 except NotFound as e:
-                    print(f"Table {table_id} not found. Skipping truncation.")
+                    print(f"Table {table_id} not found. Skipping drop operation.")
                 truncated_tables.add(table_name)  # Mark as truncated
 
 def load_csv_files(client, project_id, dataset_id, csv_directory):

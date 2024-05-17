@@ -13,14 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
--- This file intentionally has no extraction SQL.
-spool &outputdir/opdb__eoj__&v_tag
-prompt END_OF_DMA_COLLECTION
-spool off
-
 
 spool &outputdir/opdb__instances__&v_tag
 prompt PKEY|CON_ID
-SELECT :v_pkey AS pkey, &v_a_con_id AS con_id
-FROM dual;
+SELECT :v_pkey AS pkey, 
+        1 AS int_field
+FROM dual ;
 spool off

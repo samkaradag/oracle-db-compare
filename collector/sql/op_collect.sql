@@ -45,36 +45,11 @@ prompt Collecting Database Schema Validation data...
 prompt
 
 set termout &TERMOUTOFF
--- @&EXTRACTSDIR/defines.sql
--- @&EXTRACTSDIR/archlogs.sql
--- @&EXTRACTSDIR/users.sql
--- @&EXTRACTSDIR/&v_ora9ind.backups.sql
--- @&EXTRACTSDIR/columntypes.sql
--- -- @&EXTRACTSDIR/compressbytype.sql
--- @&EXTRACTSDIR/&v_ora9ind.cpucoresusage.sql
--- @&EXTRACTSDIR/dataguard.sql
--- @&EXTRACTSDIR/datatypes.sql
--- @&EXTRACTSDIR/&v_ora9ind.dbfeatures.sql
--- @&EXTRACTSDIR/&v_ora9ind.dbhwmarkstatistics.sql
--- @&EXTRACTSDIR/dbinstances.sql
--- @&EXTRACTSDIR/dblinks.sql
 @&EXTRACTSDIR/dbobjects.sql
 @&EXTRACTSDIR/dbobjectnames.sql
--- @&EXTRACTSDIR/dbparameters.sql
--- @&EXTRACTSDIR/dbsummary.sql
--- @&EXTRACTSDIR/exttab.sql
--- @&EXTRACTSDIR/idxpertable.sql
--- @&EXTRACTSDIR/indextypes.sql
--- @&EXTRACTSDIR/indextypedtl.sql
--- @&EXTRACTSDIR/mviewtypes.sql
--- @&EXTRACTSDIR/opkeylog.sql
 @&EXTRACTSDIR/sourcecode.sql
 @&EXTRACTSDIR/sourcecode_detailed.sql
--- @&EXTRACTSDIR/dtlsourcecode.sql
--- @&EXTRACTSDIR/tablesnopk.sql
 @&EXTRACTSDIR/tableconstraints.sql
--- @&EXTRACTSDIR/tabletypes.sql
--- @&EXTRACTSDIR/tabletypedtl.sql
 @&EXTRACTSDIR/triggers.sql
 @&EXTRACTSDIR/indexes.sql
 @&EXTRACTSDIR/instances.sql
@@ -84,12 +59,6 @@ set termout &TERMOUTOFF
 @&EXTRACTSDIR/tabcolumns.sql
 @&EXTRACTSDIR/tabprivs.sql
 @&EXTRACTSDIR/users.sql
--- @&EXTRACTSDIR/usedspacedetails.sql
--- @&EXTRACTSDIR/usrsegatt.sql
--- @&SQLDIR/&v_dopluggable
--- @&SQLDIR/op_collect_&v_dodiagnostics
--- @&EXTRACTSDIR/lobsizing.sql
--- --@&EXTRACTSDIR/opatch.sql
 @&EXTRACTSDIR/eoj.sql
 
 set termout on
