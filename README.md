@@ -22,7 +22,7 @@ This utility streamlines the process of comparing the schemas and code objects o
 
 1. **Clone the Repository:**
    ```bash
-   git clone [https://github.com/](https://github.com/)<your-username>/<your-repository>.git
+   git clone https://github.com/samkaradag/oracle-db-compare
 
 2. **Set Up Environment:**
 Install required Python packages:
@@ -30,6 +30,8 @@ pip install -r requirements.txt
 
 Set environment variables (refer to config.py.example):
 * ORACLE_CONN_STRING: Connection string for the Oracle database(s).
+* ORACLE client: If the collector script is run from a client machine.
+* TNS configuration: tnsnames.ora should be configured with right TNS aliases to be supplied to collector
 * GOOGLE_APPLICATION_CREDENTIALS: Use gcloud auth application-default login
 * PROJECT_ID: Your Google Cloud project ID.
 * DATASET_ID: The BigQuery dataset to use (created if it doesn't exist).
@@ -45,16 +47,18 @@ Set environment variables (refer to config.py.example):
 
 ## Usage
 * **Collect Metadata:**
+cd collector
+./collect_data.sh --connectionStr system/password@dbtns1
+./collect_data.sh --connectionStr system/password@dbtns2
 
-./collect_data.sh --connectionStr system/password@dbtns
-
+cp the zip files provided in the output to ../importer/extracts folder
 * **Import to BigQuery:**
-
+cd ../importer
 python importer.py --project_id your_project_id --dataset_id your_dataset_name 
 
 * **Generate Reports:**
-
-python generate_report.py --project_id your_project_id --dataset_name your_dataset_name --table_name instances
+cd ../reporter
+python generate_report.py --project_id your_project_id --dataset_name your_dataset_name --table_name instances --format html
 
 ## Report Output
 The generated reports will be saved in the reports directory.

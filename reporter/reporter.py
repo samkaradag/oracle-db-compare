@@ -17,7 +17,7 @@ import os
 import yaml
 from google.cloud import bigquery
 from tabulate import tabulate
-
+import datetime
 
 # Configuration
 DEFAULT_PROJECT_ID = "your_project_id"
@@ -31,12 +31,14 @@ parser = argparse.ArgumentParser(description="Generate database comparison repor
 parser.add_argument("--project_id", help="Google Cloud project ID.")
 parser.add_argument("--dataset_name", help="BigQuery dataset name.")
 parser.add_argument("--table_name", help="BigQuery table name.")
+parser.add_argument("--format", default="text", choices=["text", "html"], help="Report format (text or html).")
 args = parser.parse_args()
 
 # Get configuration from environment variables or command-line arguments
 project_id = args.project_id or os.environ.get("PROJECT_ID") or DEFAULT_PROJECT_ID
 dataset_name = args.dataset_name or os.environ.get("DATASET_NAME") or DEFAULT_DATASET_NAME
 table_name = args.table_name or os.environ.get("TABLE_NAME") or DEFAULT_TABLE_NAME
+report_format = args.format
 
 client = bigquery.Client(project=project_id)
 
@@ -65,7 +67,7 @@ def execute_query(query):
     return results
 
 # Function to generate text report
-def generate_report(config, results, instance_1_name, instance_2_name):
+def generate_text_report(config, results, instance_1_name, instance_2_name):
     report = "## Database Comparison Report\n\n"
 
     for i, (section, query_file) in enumerate(config.items()):
@@ -84,6 +86,86 @@ def generate_report(config, results, instance_1_name, instance_2_name):
             else:
                 report += "No results found.\n\n" 
 
+    return report
+
+# Function to generate HTML report
+def generate_html_report(config, results, instance_1_name, instance_2_name):
+    report = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <link rel="stylesheet" href="report.css">
+        <title>Database Comparison Report</title>
+        <style>
+            body {{
+                font-family: sans-serif;
+            }}
+            h2, h3 {{
+                margin-top: 2em;
+            }}
+            table {{
+                border-collapse: collapse;
+                width: 100%;
+            }}
+            th, td {{
+                border: 1px solid #ddd;
+                padding: 8px;
+            }}
+            th {{
+                text-align: left;
+            }}
+        </style>
+    </head>
+    <body>
+        <h2>Database Comparison Report</h2>
+        <ul>
+    """
+
+    for i, (section, query_file) in enumerate(config.items()):
+        report += f"<li><a href='#{section.replace(' ', '_')}'>{section}</a></li>"
+
+    report += """
+        </ul>
+    """
+
+    for i, (section, query_file) in enumerate(config.items()):
+        report += f"<h3><a name='{section.replace(' ', '_')}'></a>{section}</h3>"
+
+        # Convert query results to list for tabulate while getting headers
+        table_data = list(results[i])
+
+        # Handle specific result formats (you might need to customize this)
+        if query_file == "pivot_table.sql":
+            report += f"<table>\n<thead>\n<tr>\n"
+            for header in table_data[0].keys():
+                report += f"<th>{header}</th>\n"
+            report += "</tr>\n</thead>\n<tbody>\n"
+            for row in table_data[1:]:
+                report += f"<tr>\n"
+                for value in row.values():
+                    report += f"<td>{value}</td>\n"
+                report += "</tr>\n"
+            report += "</tbody>\n</table>\n\n"
+        else:
+            # Dynamically get headers for other query types
+            if table_data:  # Check if result set is not empty
+                report += f"<table>\n<thead>\n<tr>\n"
+                for header in table_data[0].keys():
+                    report += f"<th>{header}</th>\n"
+                report += "</tr>\n</thead>\n<tbody>\n"
+                for row in table_data:
+                    report += f"<tr>\n"
+                    for value in row.values():
+                        report += f"<td>{value}</td>\n"
+                    report += "</tr>\n"
+                report += "</tbody>\n</table>\n\n"
+            else:
+                report += "<p>No results found.</p>\n\n" 
+
+    report += """
+    </body>
+    </html>
+    """
     return report
 
 # Get instance names
@@ -105,6 +187,14 @@ with open(CONFIG_FILE, "r") as f:
     config = yaml.safe_load(f)
     results = execute_queries(config)
 
-# Generate and print report
-report = generate_report(config, results, instance_1_name, instance_2_name)
-print(report)
+# Generate report based on format
+if report_format == "text":
+    report = generate_text_report(config, results, instance_1_name, instance_2_name)
+    print(report)
+elif report_format == "html":
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    report_file_name = f"database_comparison_report_{timestamp}.html"
+    report = generate_html_report(config, results, instance_1_name, instance_2_name)
+    with open(report_file_name, "w") as f:
+        f.write(report)
+    print(f"HTML report generated: {report_file_name}")
